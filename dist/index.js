@@ -88,7 +88,7 @@ console.log("TGS Action: ".concat(tgsmode));
                     baseURL: tgsurl,
                     headers: {
                         "Accept": "application/json",
-                        "api": "Tgstation.Server.Api/6.6.0",
+                        "api": "Tgstation.Server.Api/9.3.1",
                         "User-Agent": "serverscheduler/0.0.1"
                     }
                 });
