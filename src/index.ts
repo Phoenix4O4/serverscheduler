@@ -25,14 +25,15 @@ import axios from "axios";
 
 enum Mode {
     Start = "start",
-    Stop = "stop"
+    SoftStop = "softstop",
+    HardStop = "hardstop"
 }
 
 const tgsurl = process.env.tgsurl || "http://localhost:5000";
 const tgsusr = process.env.tgsusr || "admin";
 const tgspwd = process.env.tgspwd || "ISolemlySwearToDeleteTheDataDirectory";
 const tgsid = process.env.tgsid || "1"
-const tgsmode = process.env.tgsmode as Mode || Mode.Stop
+const tgsmode = process.env.tgsmode as Mode || Mode.SoftStop
 
 
 
@@ -120,7 +121,7 @@ interface TGSJob {
             }
             break;
         }
-        case Mode.Stop: {
+        case Mode.SoftStop: {
             console.log(`Setting graceful shutdown`);
             try {
                 await instance.post("/DreamDaemon", {softShutdown: true}, {
@@ -131,6 +132,33 @@ interface TGSJob {
                 console.log(`Graceful shutdown set`)
             } catch(e) {
                 console.error("Error while setting graceful shutdown", e)
+                process.exit(1);
+            }
+            break;
+        }
+        case Mode.HardStop: {
+            console.log(`Unsetting graceful shutdown`);
+            try {
+                await instance.post("/DreamDaemon", {softShutdown: false}, {
+                    headers: {
+                        instance: tgsid
+                    }
+                });
+                console.log(`Graceful shutdown unset`)
+            } catch(e) {
+                console.error("Error while unsetting graceful shutdown", e)
+                process.exit(1);
+            }
+            console.log(`Attempting to stop instance`);
+            try {
+                await instance.delete("/DreamDaemon", {
+                    headers: {
+                        instance: tgsid
+                    }
+                });
+                console.log(`Succeful`)
+            } catch(e) {
+                console.error("Error while stopping instance", e)
                 process.exit(1);
             }
             break;

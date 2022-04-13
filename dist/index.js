@@ -1,4 +1,26 @@
 "use strict";
+/*
+MIT License
+
+Copyright (c) 2021 alexkar598
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+*/
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -43,20 +65,21 @@ var axios_1 = __importDefault(require("axios"));
 var Mode;
 (function (Mode) {
     Mode["Start"] = "start";
-    Mode["Stop"] = "stop";
+    Mode["SoftStop"] = "softstop";
+    Mode["HardStop"] = "hardstop";
 })(Mode || (Mode = {}));
 var tgsurl = process.env.tgsurl || "http://localhost:5000";
 var tgsusr = process.env.tgsusr || "admin";
 var tgspwd = process.env.tgspwd || "ISolemlySwearToDeleteTheDataDirectory";
 var tgsid = process.env.tgsid || "1";
-var tgsmode = process.env.tgsmode || Mode.Stop;
-console.log("Starting at " + (new Date()).toUTCString());
-console.log("TGS Endpoint: " + tgsurl);
-console.log("TGS User: " + tgsusr);
-console.log("TGS Instance: " + tgsid);
-console.log("TGS Action: " + tgsmode);
+var tgsmode = process.env.tgsmode || Mode.SoftStop;
+console.log("Starting at ".concat((new Date()).toUTCString()));
+console.log("TGS Endpoint: ".concat(tgsurl));
+console.log("TGS User: ".concat(tgsusr));
+console.log("TGS Instance: ".concat(tgsid));
+console.log("TGS Action: ".concat(tgsmode));
 (function () { return __awaiter(void 0, void 0, void 0, function () {
-    var tgstoken, instance, response, e_1, _a, response, e_2, e_3, e_4;
+    var tgstoken, instance, response, e_1, _a, response, e_2, e_3, e_4, e_5, e_6;
     return __generator(this, function (_b) {
         switch (_b.label) {
             case 0:
@@ -103,9 +126,10 @@ console.log("TGS Action: " + tgsmode);
                 _a = tgsmode;
                 switch (_a) {
                     case Mode.Start: return [3 /*break*/, 5];
-                    case Mode.Stop: return [3 /*break*/, 14];
+                    case Mode.SoftStop: return [3 /*break*/, 14];
+                    case Mode.HardStop: return [3 /*break*/, 19];
                 }
-                return [3 /*break*/, 19];
+                return [3 /*break*/, 28];
             case 5:
                 console.log("Attempting to start instance");
                 _b.label = 6;
@@ -118,7 +142,7 @@ console.log("TGS Action: " + tgsmode);
                     })];
             case 7:
                 response = ((_b.sent()).data);
-                console.log("Started job " + response.id + ": " + response.description);
+                console.log("Started job ".concat(response.id, ": ").concat(response.description));
                 return [3 /*break*/, 9];
             case 8:
                 e_2 = _b.sent();
@@ -144,7 +168,7 @@ console.log("TGS Action: " + tgsmode);
                 console.error("Error while unsetting graceful shutdown", e_3);
                 process.exit(1);
                 return [3 /*break*/, 13];
-            case 13: return [3 /*break*/, 20];
+            case 13: return [3 /*break*/, 29];
             case 14:
                 console.log("Setting graceful shutdown");
                 _b.label = 15;
@@ -164,14 +188,53 @@ console.log("TGS Action: " + tgsmode);
                 console.error("Error while setting graceful shutdown", e_4);
                 process.exit(1);
                 return [3 /*break*/, 18];
-            case 18: return [3 /*break*/, 20];
+            case 18: return [3 /*break*/, 29];
             case 19:
+                console.log("Unsetting graceful shutdown");
+                _b.label = 20;
+            case 20:
+                _b.trys.push([20, 22, , 23]);
+                return [4 /*yield*/, instance.post("/DreamDaemon", { softShutdown: false }, {
+                        headers: {
+                            instance: tgsid
+                        }
+                    })];
+            case 21:
+                _b.sent();
+                console.log("Graceful shutdown unset");
+                return [3 /*break*/, 23];
+            case 22:
+                e_5 = _b.sent();
+                console.error("Error while unsetting graceful shutdown", e_5);
+                process.exit(1);
+                return [3 /*break*/, 23];
+            case 23:
+                console.log("Attempting to stop instance");
+                _b.label = 24;
+            case 24:
+                _b.trys.push([24, 26, , 27]);
+                return [4 /*yield*/, instance.delete("/DreamDaemon", {
+                        headers: {
+                            instance: tgsid
+                        }
+                    })];
+            case 25:
+                _b.sent();
+                console.log("Succeful");
+                return [3 /*break*/, 27];
+            case 26:
+                e_6 = _b.sent();
+                console.error("Error while stopping instance", e_6);
+                process.exit(1);
+                return [3 /*break*/, 27];
+            case 27: return [3 /*break*/, 29];
+            case 28:
                 {
-                    console.error("Unknown action: " + tgsmode);
+                    console.error("Unknown action: ".concat(tgsmode));
                     process.exit(1);
                 }
-                _b.label = 20;
-            case 20: return [2 /*return*/];
+                _b.label = 29;
+            case 29: return [2 /*return*/];
         }
     });
 }); })();
