@@ -137,7 +137,7 @@ interface TGSJob {
             break;
         }
         case Mode.HardStop: {
-            console.log(`Setting graceful shutdown`);
+            console.log(`Unsetting graceful shutdown`);
             try {
                 await instance.post("/DreamDaemon", {softShutdown: false}, {
                     headers: {
@@ -146,7 +146,7 @@ interface TGSJob {
                 });
                 console.log(`Graceful shutdown unset`)
             } catch(e) {
-                console.error("Error while setting graceful shutdown", e)
+                console.error("Error while unsetting graceful shutdown", e)
                 process.exit(1);
             }
             break;
