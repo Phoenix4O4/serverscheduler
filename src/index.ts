@@ -149,6 +149,18 @@ interface TGSJob {
                 console.error("Error while unsetting graceful shutdown", e)
                 process.exit(1);
             }
+            console.log(`Attempting to stop instance`);
+            try {
+                await instance.delete("/DreamDaemon", {
+                    headers: {
+                        instance: tgsid
+                    }
+                });
+                console.log(`Succeful`)
+            } catch(e) {
+                console.error("Error while stopping instance", e)
+                process.exit(1);
+            }
             break;
         }
         default: {
